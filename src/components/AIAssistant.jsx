@@ -43,7 +43,10 @@ export default function AIAssistant() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('wsu_grok_key') || '');
+  // Read from build-time secret first, then localStorage fallback
+  const [apiKey, setApiKey] = useState(
+    () => import.meta.env.VITE_GROK_API_KEY || localStorage.getItem('wsu_grok_key') || ''
+  );
   const [showSettings, setShowSettings] = useState(false);
   const [tempKey, setTempKey] = useState('');
   const bottomRef = useRef(null);
@@ -185,7 +188,11 @@ export default function AIAssistant() {
             <div>
               <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>Raider AI Assistant</div>
               <div style={{ fontSize: 10.5, color: apiKey ? 'var(--text-green)' : 'var(--text-muted)' }}>
-                {apiKey ? '● Grok-3 connected' : '○ API key required'}
+                {apiKey
+                  ? import.meta.env.VITE_GROK_API_KEY
+                    ? '● Grok-3 auto-configured'
+                    : '● Grok-3 connected'
+                  : '○ API key required'}
               </div>
             </div>
             <div style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--text-muted)', background: 'rgba(43,82,52,0.2)', padding: '3px 8px', borderRadius: 'var(--radius-full)', border: '1px solid var(--border-subtle)' }}>
